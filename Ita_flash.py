@@ -2,32 +2,48 @@ import streamlit as st
 import random
 import json
 
-# Load JSON data
+# Load JSON data only once
 @st.cache_data
 def load_data():
     with open("italian_flashcards_2.5flash_5k_true.json", "r", encoding="utf-8") as file:
         return json.load(file)
 
-data = load_data()
+# Initialize session state
+if "remaining_flashcards" not in st.session_state:
+    st.session_state.remaining_flashcards = load_data()
 
-# Session state to store current flashcard index
-if "current_index" not in st.session_state:
-    st.session_state.current_index = random.randint(0, len(data) - 1)
+if "show_translation" not in st.session_state:
+    st.session_state.show_translation = False
 
-flashcard = data[st.session_state.current_index]
+if "current_flashcard" not in st.session_state:
+    st.session_state.current_flashcard = random.choice(st.session_state.remaining_flashcards)
 
+# Set title
 st.title("🇮🇹 Italian Flashcard Practice")
 
+# Show Italian sentence
 st.subheader("🗣 Example Sentence in Italian:")
-st.markdown(f"**{flashcard['example_sentence_native']}**")
+st.markdown(f"**{st.session_state.current_flashcard['example_sentence_native']}**")
 
-# Button to show translation
+# Show translation if requested
 if st.button("Translate to English"):
+    st.session_state.show_translation = True
+
+if st.session_state.show_translation:
     st.subheader("🔁 English Translation:")
-    st.markdown(f"**{flashcard['example_sentence_english']}**")
+    st.markdown(f"**{st.session_state.current_flashcard['example_sentence_english']}**")
 
-# Button to get a new random flashcard
+# Move to the next sentence
 if st.button("Show another sentence"):
-    st.session_state.current_index = random.randint(0, len(data) - 1)
-    st.experimental_rerun()  # ✅ This is allowed here
+    # Remove current from the list
+    st.session_state.remaining_flashcards.remove(st.session_state.current_flashcard)
 
+    # If no cards left, reset
+    if not st.session_state.remaining_flashcards:
+        st.success("🎉 You've gone through all the flashcards!")
+        if st.button("🔄 Restart Flashcards"):
+            st.session_state.remaining_flashcards = load_data()
+    else:
+        # Pick new random card
+        st.session_state.current_flashcard = random.choice(st.session_state.remaining_flashcards)
+        st.session_state.show_translation = False
