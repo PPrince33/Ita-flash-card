@@ -25,7 +25,7 @@ st.title("🇮🇹 Italian Flashcard Practice")
 st.subheader("🗣 Example Sentence in Italian:")
 st.markdown(f"**{st.session_state.current_flashcard['example_sentence_native']}**")
 
-# Show translation if requested
+# Show translation only if the button was clicked
 if st.button("Translate to English"):
     st.session_state.show_translation = True
 
@@ -33,17 +33,19 @@ if st.session_state.show_translation:
     st.subheader("🔁 English Translation:")
     st.markdown(f"**{st.session_state.current_flashcard['example_sentence_english']}**")
 
-# Move to the next sentence
+# Next sentence button
 if st.button("Show another sentence"):
-    # Remove current from the list
+    # Remove the current flashcard from the list
     st.session_state.remaining_flashcards.remove(st.session_state.current_flashcard)
 
-    # If no cards left, reset
     if not st.session_state.remaining_flashcards:
         st.success("🎉 You've gone through all the flashcards!")
         if st.button("🔄 Restart Flashcards"):
             st.session_state.remaining_flashcards = load_data()
+            st.session_state.current_flashcard = random.choice(st.session_state.remaining_flashcards)
+            st.session_state.show_translation = False
     else:
-        # Pick new random card
+        # Get a new flashcard
         st.session_state.current_flashcard = random.choice(st.session_state.remaining_flashcards)
         st.session_state.show_translation = False
+
