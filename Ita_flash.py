@@ -5,7 +5,7 @@ import json
 # Load JSON data
 @st.cache_data
 def load_data():
-    with open("your_flashcard_data.json", "r", encoding="utf-8") as file:
+    with open("italian_flashcards_2.5flash_5k_true.json", "r", encoding="utf-8") as file:
         return json.load(file)
 
 data = load_data()
