@@ -48,4 +48,3 @@ if st.button("Show another sentence"):
         # Get a new flashcard
         st.session_state.current_flashcard = random.choice(st.session_state.remaining_flashcards)
         st.session_state.show_translation = False
-
